@@ -17,19 +17,20 @@
             
             <!-- Red Navigation Arrow -->
             <a-entity
-                geometry="primitive: cone; radiusBottom: 0.3; radiusTop: 0.0; height: 0.5"
+                geometry="primitive: cone; radiusBottom: 0.1; radiusTop: 0.0; height: 0.2"
                 material="color: red"
-                position="0 0.5 0"
+                position="0 0.1 0"
+                scale="0.5 0.5 0.5"
                 rotation="-90 0 0">
             </a-entity>
 
             <!-- Direction Text -->
-            <a-text value="Go Forward" color="black" position="-0.5 0.8 0"></a-text>
+            <a-text value="Go Forward" color="black" position="-0.3 0.3 0" scale="0.5 0.5 0.5"></a-text>
 
         </a-marker>
 
-        <!-- AR Camera -->
-        <a-camera-static></a-camera-static>
+        <!-- Fixed Camera (No Zoom) -->
+        <a-entity camera position="0 2 5" look-controls-enabled="false"></a-entity>
 
     </a-scene>
 
