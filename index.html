@@ -4,18 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AR.js QR Code Navigation</title>
+
+    <!--
+        A-Frame (v1.2.0): A WebXR framework built on top of Three.js that lets you
+        create 3D/AR/VR scenes using declarative HTML-like tags (<a-scene>, <a-entity>, etc.).
+        It handles rendering, physics, and input abstractions.
+    -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+
+    <!--
+        AR.js A-Frame integration: Adds marker-based Augmented Reality support to A-Frame.
+        It uses the device camera to detect printed image markers (pattern files) and
+        overlays 3D content on top of them in real time.
+        NOTE: AR.js requires the page to be served over HTTPS (or localhost) because
+        browsers restrict camera access to secure contexts.
+    -->
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
 </head>
+
+<!--
+    margin:0 removes default browser spacing so the AR camera feed fills the screen.
+    overflow:hidden prevents scroll bars from appearing over the full-screen canvas.
+-->
 <body style="margin: 0; overflow: hidden;">
 
-    <!-- AR Scene -->
+    <!--
+        <a-scene>: The root container for all 3D/AR content.
+        - embedded: tells A-Frame to render inside the parent page element rather than
+          taking over the entire browser window.
+        - arjs: activates the AR.js integration; AR.js will open the device camera,
+          render its feed as the background, and begin scanning for markers every frame.
+    -->
     <a-scene embedded arjs>
-        
-        <!-- QR Code or Image Marker -->
+
+        <!--
+            <a-marker>: Defines an image marker that AR.js will track via the camera.
+            - preset="custom": signals that we are supplying our own marker file
+              (instead of a built-in preset like "hiro" or "kanji").
+            - type="pattern": the marker is described by a .patt file which encodes
+              the black-and-white bitmap of the printed image.
+            - url="pattern-marker.patt": path to the pattern file generated from the
+              marker image. To replace the marker, generate a new .patt file at
+              https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/examples/generator.html
+              and update this URL.
+
+            Any child elements placed inside <a-marker> will appear anchored to the
+            real-world marker whenever it is visible in the camera.
+        -->
         <a-marker preset="custom" type="pattern" url="pattern-marker.patt">
-            
-            <!-- Red Navigation Arrow -->
+
+            <!--
+                Navigation Arrow (cone geometry).
+                - primitive: cone  – built-in A-Frame shape.
+                - radiusBottom: 0.1 / radiusTop: 0.0  – a flat base and a pointed tip
+                  creates a classic arrow/pointer shape.
+                - height: 0.2  – total length of the cone in A-Frame world units
+                  (1 unit ≈ 1 meter in AR.js scale).
+                - material color: red  – makes the arrow visually prominent.
+                - position="0 0.1 0"  – places the cone slightly above the marker
+                  surface (Y=0.1) so it doesn't clip into the printed paper.
+                - scale="0.5 0.5 0.5"  – halves the default size so the arrow fits
+                  neatly over a typical A4/letter-sized marker.
+                - rotation="-90 0 0"  – rotates the cone -90° around the X-axis so
+                  its tip points along the camera's forward direction (Z-axis) rather
+                  than straight up.
+            -->
             <a-entity
                 geometry="primitive: cone; radiusBottom: 0.1; radiusTop: 0.0; height: 0.2"
                 material="color: red"
@@ -24,12 +77,28 @@
                 rotation="-90 0 0">
             </a-entity>
 
-            <!-- Direction Text -->
+            <!--
+                Direction label rendered in 3D space above the arrow.
+                - value: the navigation instruction shown to the user.
+                - color: text colour (black for readability against most backgrounds).
+                - position="-0.3 0.3 0"  – offset left (X=-0.3) and upward (Y=0.3) so
+                  the text sits above and to the side of the cone without overlapping.
+                - scale="0.5 0.5 0.5"  – reduces text size to match the scaled-down
+                  arrow and remain proportional to the marker.
+            -->
             <a-text value="Go Forward" color="black" position="-0.3 0.3 0" scale="0.5 0.5 0.5"></a-text>
 
         </a-marker>
 
-        <!-- Fixed Camera (No Zoom) -->
+        <!--
+            Camera entity.
+            - position="0 2 5"  – places the default (non-AR) preview camera 2 units
+              high and 5 units back from the origin. This only affects the A-Frame
+              editor/desktop preview; in AR mode the device's physical camera is used.
+            - look-controls-enabled="false"  – disables mouse/touch look-around so the
+              AR camera orientation is driven exclusively by the device's gyroscope/
+              motion sensors rather than user drag gestures.
+        -->
         <a-entity camera position="0 2 5" look-controls-enabled="false"></a-entity>
 
     </a-scene>
